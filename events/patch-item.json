@@ -1,0 +1,12 @@
+{
+  "body": "[{\"op\":\"replace\",\"path\":\"/url\",\"value\":\"https://bowland.link/\"}]",
+  "pathParameters": {
+    "linkId": "abc123"
+  },
+  "requestContext": {
+    "http": {
+      "method": "PATCH",
+      "path": "/v1/links"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "body": "{\"url\":\"https://dbowland.com/\"}",
+  "requestContext": {
+    "http": {
+      "method": "POST",
+      "path": "/v1/links"
+    }
+  }
+}

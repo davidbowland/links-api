@@ -1,0 +1,374 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  API for links project
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - prod
+      - test
+    Description: Environment for deploy
+
+Mappings:
+  EnvironmentMap:
+    prod:
+      certificate: adce1a21-90b4-4120-8548-111215e582f0
+      corsDomain: https://links.dbowland.com
+      domain: links-api.dbowland.com
+      logStreamFunction: log-subscriber
+      table: links-api
+      zoneId: Z072422417XWM8PIXXSFA
+    test:
+      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      corsDomain: https://links.bowland.link
+      domain: links-api.bowland.link
+      logStreamFunction: log-subscriber-test
+      table: links-api-test
+      zoneId: Z01312547RGU1BYKIJXY
+
+Resources:
+  # API Gateway
+
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Auth:
+        ApiKeyRequired: true # sets for all methods
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Description: Usage plan for links-api
+      Domain:
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
+        EndpointConfiguration: EDGE
+        Route53:
+          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+        BasePath:
+          - /v1
+
+  # Lambda
+
+  DeleteItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/delete-item.deleteByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: links-api delete by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /links/{linkId}
+            Method: delete
+            Auth:
+              ApiKeyRequired: true
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  DeleteItemLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: DeleteItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
+      RetentionInDays: 30
+
+  DeleteItemLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref DeleteItemLogGroup
+
+  GetAllItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-all-items.getAllItemsHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: links-api get all items
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /links
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  GetAllItemsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetAllItemsFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
+      RetentionInDays: 30
+
+  GetAllItemsLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetAllItemsLogGroup
+
+  GetByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-by-id.getByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: links-api get by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /links/{linkId}
+            Method: get
+            Auth:
+              ApiKeyRequired: false
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  GetByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
+      RetentionInDays: 30
+
+  GetByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetByIdLogGroup
+
+  PatchItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/patch-item.patchItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: links-api patch item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /links/{linkId}
+            Method: patch
+            Auth:
+              ApiKeyRequired: true
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  PatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PatchItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
+      RetentionInDays: 30
+
+  PatchGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PatchLogGroup
+
+  PostItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-item.postItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: links-api post item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+          ID_MIN_LENGTH: 4
+          ID_MAX_LENGTH: 5
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /links
+            Method: post
+            Auth:
+              ApiKeyRequired: false
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  PostLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostItemFunction}
+      RetentionInDays: 30
+
+  PostGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostLogGroup
+
+  PostPruneItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-start-prune.postStartPruneHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 60
+      Description: links-api post item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LinksTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref LinksTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /start-prune
+            Method: post
+            Auth:
+              ApiKeyRequired: true
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  PostPruneLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostPruneItemFunction}
+      RetentionInDays: 30
+
+  PostPruneGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostPruneLogGroup
+
+  # DynamoDB
+
+  LinksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: LinkId
+          AttributeType: S
+        - AttributeName: Expiration
+          AttributeType: N
+      BillingMode: PAY_PER_REQUEST
+      GlobalSecondaryIndexes:
+        - IndexName: ExpirationIndex
+          KeySchema:
+            - AttributeName: Expiration
+              KeyType: HASH
+          Projection:
+            NonKeyAttributes:
+              - LinkId
+            ProjectionType: INCLUDE
+      KeySchema:
+        - AttributeName: LinkId
+          KeyType: HASH
+      TableName: !FindInMap [EnvironmentMap, !Ref Environment, table]
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
