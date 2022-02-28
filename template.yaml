@@ -23,6 +23,7 @@ Mappings:
       domain: links-api.dbowland.com
       domainInternal: links-api-internal.dbowland.com
       logStreamFunction: log-subscriber
+      schedulerFunction: scheduler-service
       table: links-api
       zoneId: Z072422417XWM8PIXXSFA
     test:
@@ -32,6 +33,7 @@ Mappings:
       domain: links-api.bowland.link
       domainInternal: links-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
+      schedulerFunction: scheduler-service-test
       table: links-api-test
       zoneId: Z01312547RGU1BYKIJXY
 
@@ -83,13 +85,22 @@ Resources:
         BasePath:
           - /v1
         CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-2:${AWS::AccountId}:certificate/${Certificate}'
+          - 'arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${Certificate}'
           - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificateRegional]
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         EndpointConfiguration: REGIONAL
-        Route53:
-          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
       FailOnWarnings: true
+
+  # SAM won't create two Route53 records, so the HttpApi domain name is created separately
+  HttpRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName: !Sub '${HttpApi.DomainName.RegionalDomainName}'
+        HostedZoneId: !Sub '${HttpApi.DomainName.RegionalHostedZoneId}'
+      HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+      Name: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      Type: A
 
   # Lambda
 
@@ -421,3 +432,36 @@ Resources:
           Value: 'links-api'
         - Key: 'created-for'
           Value: 'links'
+
+  # EventBridge
+
+  PruneEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Prunes old links from link table
+      ScheduleExpression: 'cron(17 8 1/4 * ? *)'
+      State: ENABLED
+      Targets:
+        - Arn: !Sub
+            - 'arn:aws:lambda:us-east-2:${AWS::AccountId}:function:${FunctionName}'
+            - FunctionName: !FindInMap [EnvironmentMap, !Ref Environment, schedulerFunction]
+          Id: SchedulerLambda
+          InputTransformer:
+            InputPathsMap:
+              'resources': '$.resources'
+            InputTemplate: !Sub
+              - |
+                {
+                  "resources": <resources>,
+                  "request": {
+                    "url": "https://${Domain}/v1/start-prune",
+                    "method": "POST",
+                    "data": { }
+                  },
+                  "apiKey": {
+                    "id": "${ApiKey}",
+                    "region": "us-east-2"
+                  }
+                }
+              - ApiKey: !Sub '${Api.ApiKey.APIKeyId}'
+                Domain: !FindInMap [EnvironmentMap, !Ref Environment, domainInternal]
