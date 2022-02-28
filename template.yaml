@@ -17,16 +17,20 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      certificate: adce1a21-90b4-4120-8548-111215e582f0
+      certificateEdge: adce1a21-90b4-4120-8548-111215e582f0
+      certificateRegional: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://links.dbowland.com
       domain: links-api.dbowland.com
+      domainInternal: links-api-internal.dbowland.com
       logStreamFunction: log-subscriber
       table: links-api
       zoneId: Z072422417XWM8PIXXSFA
     test:
-      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      certificateEdge: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      certificateRegional: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://links.bowland.link
       domain: links-api.bowland.link
+      domainInternal: links-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
       table: links-api-test
       zoneId: Z01312547RGU1BYKIJXY
@@ -44,15 +48,48 @@ Resources:
           CreateUsagePlan: PER_API
           Description: Usage plan for links-api
       Domain:
-        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domainInternal]
         CertificateArn: !Sub
           - 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${Certificate}'
-          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificateEdge]
         EndpointConfiguration: EDGE
         Route53:
           HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
         BasePath:
           - /v1
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: v1
+      CorsConfiguration:
+        AllowCredentials: true
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - X-Amz-Date
+          - X-Amz-Security-Token
+          - X-Api-Key
+        AllowMethods:
+          - DELETE
+          - GET
+          - OPTIONS
+          - PATCH
+          - POST
+          - PUT
+        AllowOrigins:
+          - !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+      Domain:
+        BasePath:
+          - /v1
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-2:${AWS::AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificateRegional]
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+      FailOnWarnings: true
 
   # Lambda
 
@@ -176,7 +213,13 @@ Resources:
             Path: /links/{linkId}
             Method: get
             Auth:
-              ApiKeyRequired: false
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /links/{linkId}
+            Method: get
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
@@ -275,7 +318,13 @@ Resources:
             Path: /links
             Method: post
             Auth:
-              ApiKeyRequired: false
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /links
+            Method: post
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'

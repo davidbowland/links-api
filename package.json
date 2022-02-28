@@ -8,6 +8,14 @@
     "node": "^14.0.0"
   },
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidbowland/links-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidbowland/links-api/issues"
+  },
+  "homepage": "https://github.com/davidbowland/links-api#readme",
   "scripts": {
     "build": "npm run clean && tsc && cp package*.json dist/ && cd dist/ && HUSKY=0 NODE_ENV=production npm ci",
     "clean": "rm -rf dist coverage && NODE_ENV=test npm ci",
@@ -28,14 +36,6 @@
       "prettier --write --ignore-unknown"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/davidbowland/links-api.git"
-  },
-  "bugs": {
-    "url": "https://github.com/davidbowland/links-api/issues"
-  },
-  "homepage": "https://github.com/davidbowland/links-api#readme",
   "dependencies": {
     "aws-sdk": "^2.923.0",
     "fast-json-patch": "^3.1.0"
