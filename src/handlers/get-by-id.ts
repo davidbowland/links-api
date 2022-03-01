@@ -1,12 +1,22 @@
-import { getDataById } from '../services/dynamodb'
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
-import { log } from '../utils/logging'
+import { getDataById, setDataById } from '../services/dynamodb'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Link } from '../types'
+import { log, logError } from '../utils/logging'
 import status from '../utils/status'
+
+const incrementAccessCount = async (linkId: string, link: Link): Promise<void> => {
+  try {
+    await setDataById(linkId, { ...link, accessCount: link.accessCount + 1 })
+  } catch (error) {
+    logError(error)
+  }
+}
 
 const fetchById = async (linkId: string): Promise<APIGatewayProxyResultV2<any>> => {
   try {
-    const data = await getDataById(linkId)
-    return { ...status.OK, body: JSON.stringify({ ...data, linkId }) }
+    const link = await getDataById(linkId)
+    await incrementAccessCount(linkId, link)
+
+    return { ...status.OK, body: JSON.stringify({ ...link, linkId }) }
   } catch (error) {
     return status.NOT_FOUND
   }
