@@ -19,7 +19,7 @@ describe('post-item', () => {
   beforeAll(() => {
     mocked(dynamodb).getDataById.mockRejectedValue(undefined)
     mocked(dynamodb).setDataById.mockResolvedValue(undefined)
-    mocked(events).extractLinkFromEvent.mockResolvedValue(link)
+    mocked(events).extractLinkFromEvent.mockReturnValue(link)
 
     Math.random = mockRandom.mockReturnValue(0.5)
   })
@@ -30,7 +30,9 @@ describe('post-item', () => {
 
   describe('postItemHandler', () => {
     test('expect BAD_REQUEST when link is invalid', async () => {
-      mocked(events).extractLinkFromEvent.mockRejectedValueOnce('Bad request')
+      mocked(events).extractLinkFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })

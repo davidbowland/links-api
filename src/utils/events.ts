@@ -5,17 +5,27 @@ const EXPIRATION_DURATION = 604_800_000
 
 /* Links */
 
-const isValidLink = (link: Link): Promise<Link> =>
-  Promise.resolve()
-    .then(() => link.url ?? Promise.reject('url missing from link'))
-    .then(() => link)
+interface UnformattedLink {
+  accessCount?: number
+  expiration?: number
+  lastAccessed?: number
+  url: string
+}
 
-export const formatLink = (link: Link): Promise<Link> =>
-  isValidLink(link).then(() => ({
-    accessCount: 0,
-    expiration: new Date().getTime() + EXPIRATION_DURATION,
+export const formatLink = (link: UnformattedLink): Link => {
+  if (!link.url) {
+    throw new Error('url missing from link')
+  }
+  if (new URL(link.url).protocol.match(/^https?:$/i) === null) {
+    throw new Error('url must be http or https')
+  }
+  return {
+    accessCount: link.accessCount ?? 0,
+    expiration: link.expiration ?? new Date().getTime() + EXPIRATION_DURATION,
+    lastAccessed: link.lastAccessed ?? 0,
     url: link.url,
-  }))
+  }
+}
 
 /* Event */
 
@@ -24,8 +34,8 @@ const parseEventBody = (event: APIGatewayProxyEventV2): unknown =>
     event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
   )
 
-export const extractLinkFromEvent = (event: APIGatewayProxyEventV2): Promise<Link> =>
-  formatLink(parseEventBody(event) as Link)
+export const extractLinkFromEvent = (event: APIGatewayProxyEventV2): Link =>
+  formatLink(parseEventBody(event) as UnformattedLink)
 
 export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchOperation[] =>
   parseEventBody(event) as PatchOperation[]

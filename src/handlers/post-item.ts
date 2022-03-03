@@ -40,7 +40,7 @@ const getNextId = async (): Promise<string> => {
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const link = await extractLinkFromEvent(event)
+    const link = extractLinkFromEvent(event)
     try {
       const linkId = await getNextId()
       await setDataById(linkId, link)
@@ -54,6 +54,6 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
       return status.INTERNAL_SERVER_ERROR
     }
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }
