@@ -5,7 +5,7 @@ import status from '../utils/status'
 
 const incrementAccessCount = async (linkId: string, link: Link): Promise<void> => {
   try {
-    await setDataById(linkId, { ...link, accessCount: link.accessCount + 1 })
+    await setDataById(linkId, { ...link, accessCount: link.accessCount + 1, lastAccessed: new Date().getTime() })
   } catch (error) {
     logError(error)
   }
