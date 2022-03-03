@@ -319,8 +319,8 @@ Resources:
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref LinksTable
-          ID_MIN_LENGTH: 4
-          ID_MAX_LENGTH: 5
+          ID_MIN_LENGTH: 3
+          ID_MAX_LENGTH: 4
       Events:
         ApiKey:
           Type: Api

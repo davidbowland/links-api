@@ -37,7 +37,7 @@ describe('post-item', () => {
 
     test('expect linkId passed to setDataById', async () => {
       await postItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('jmcm', expect.objectContaining({ url: link.url }))
+      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('j2j2', expect.objectContaining({ url: link.url }))
     })
 
     test('expect second linkId when first exists', async () => {
@@ -45,7 +45,7 @@ describe('post-item', () => {
       mockRandom.mockReturnValueOnce(0.5)
       mockRandom.mockReturnValueOnce(0.25)
       await postItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('bchb', expect.objectContaining({ url: link.url }))
+      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('b2s2', expect.objectContaining({ url: link.url }))
     })
 
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
@@ -57,13 +57,13 @@ describe('post-item', () => {
     test('expect CREATED and body', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
-      expect(JSON.parse(result.body)).toEqual(expect.objectContaining({ url: link.url, linkId: 'jmcm' }))
+      expect(JSON.parse(result.body)).toEqual(expect.objectContaining({ url: link.url, linkId: 'j2j2' }))
     })
 
     test('expect Location header', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(
-        expect.objectContaining({ headers: { Location: 'https://links-api.bowland.link/v1/links/jmcm' } })
+        expect.objectContaining({ headers: { Location: 'https://links-api.bowland.link/v1/links/j2j2' } })
       )
     })
   })

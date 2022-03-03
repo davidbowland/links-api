@@ -6,11 +6,11 @@ import { extractLinkFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
 // Don't allow vowells, digits that look like vowells, or ambiguous characters
-const allowedCharacters = '256789bcdfghjmnopqrstvwxz'
+const allowedCharacters = '256789bcdfghjmnpqrstvwxz'
 
 const valueToId = (value: number): string => {
   const digit = allowedCharacters.charAt(value % allowedCharacters.length)
-  return value > allowedCharacters.length ? valueToId(Math.floor(value / allowedCharacters.length)) + digit : digit
+  return value >= allowedCharacters.length ? valueToId(Math.floor(value / allowedCharacters.length)) + digit : digit
 }
 
 const idExists = async (linkId: string): Promise<boolean> => {
@@ -32,8 +32,8 @@ const getRandomId = async (minValue: number, maxValue: number): Promise<string> 
 }
 
 const getNextId = async (): Promise<string> => {
-  const minValue = Math.pow(10, parseInt(process.env.ID_MIN_LENGTH, 10) - 1)
-  const maxValue = Math.pow(allowedCharacters.length, parseInt(process.env.ID_MAX_LENGTH, 10) - 1)
+  const minValue = Math.pow(allowedCharacters.length, parseInt(process.env.ID_MIN_LENGTH, 10) - 1)
+  const maxValue = Math.pow(allowedCharacters.length, parseInt(process.env.ID_MAX_LENGTH, 10))
   return getRandomId(minValue, maxValue)
 }
 
