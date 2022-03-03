@@ -23,10 +23,10 @@ export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<A
   log('Received event', { ...event, body: undefined })
   try {
     const linkId = event.pathParameters.linkId
-    const patchOperations = await extractJsonPatchFromEvent(event)
+    const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(linkId, patchOperations)
     return result
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }
