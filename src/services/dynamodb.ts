@@ -37,10 +37,10 @@ export const getDataById = (linkId: string): Promise<Link> =>
 
 /* Scan for all items */
 
-const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): LinkBatch =>
-  response.Items.reduce((result, item) => ({ ...result, [item.LinkId.S]: JSON.parse(item.Data.S) }), {} as LinkBatch)
+const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): LinkBatch[] =>
+  response.Items.map((item) => ({ id: item.LinkId.S, data: JSON.parse(item.Data.S) }))
 
-export const scanData = (): Promise<LinkBatch> =>
+export const scanData = (): Promise<LinkBatch[]> =>
   dynamodb
     .scan({
       AttributesToGet: ['Data', 'LinkId', 'Expiration'],

@@ -61,13 +61,13 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await scanData()
-      expect(result).toEqual({ [linkId]: link })
+      expect(result).toEqual([{ data: link, id: linkId }])
     })
 
     test('expect empty object with no data returned', async () => {
       mockScanTable.mockResolvedValueOnce({ Items: [] })
       const result = await scanData()
-      expect(result).toEqual({})
+      expect(result).toEqual([])
     })
   })
 
