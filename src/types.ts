@@ -9,7 +9,8 @@ export interface Link {
 }
 
 export interface LinkBatch {
-  [key: string]: Link
+  data: Link
+  id: string
 }
 
 export interface StringObject {
