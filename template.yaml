@@ -25,6 +25,8 @@ Mappings:
       logStreamFunction: log-subscriber
       schedulerFunction: scheduler-service
       table: links-api
+      userPool: us-east-2_h0oBECGFC
+      userPoolClient: nd9p4gg5esgqvvop9u78umolb
       zoneId: Z072422417XWM8PIXXSFA
     test:
       certificateEdge: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
@@ -35,6 +37,8 @@ Mappings:
       logStreamFunction: log-subscriber-test
       schedulerFunction: scheduler-service-test
       table: links-api-test
+      userPool: us-east-2_7k2VH6sSy
+      userPoolClient: 56g7s1qsa7ppib7elgvavi8s2t
       zoneId: Z01312547RGU1BYKIJXY
 
 Resources:
@@ -63,7 +67,17 @@ Resources:
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: v1
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub
+                - 'https://cognito-idp.us-east-2.amazonaws.com/${UserPool}'
+                - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
+              audience:
+                - !FindInMap [EnvironmentMap, !Ref Environment, userPoolClient]
+        DefaultAuthorizer: CognitoAuthorizer
       CorsConfiguration:
         AllowCredentials: true
         AllowHeaders:
@@ -90,6 +104,7 @@ Resources:
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         EndpointConfiguration: REGIONAL
       FailOnWarnings: true
+      StageName: v1
 
   # SAM won't create two Route53 records, so the HttpApi domain name is created separately
   HttpRecordSet:
