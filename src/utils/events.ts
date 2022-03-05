@@ -1,4 +1,5 @@
-import { APIGatewayProxyEventV2, Link, PatchOperation } from '../types'
+import { APIGatewayProxyEventV2, Link, PatchOperation, StringObject } from '../types'
+import jwt from 'jsonwebtoken'
 
 // 1 week = 7 days * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 604,800,000
 const EXPIRATION_DURATION = 604_800_000
@@ -39,3 +40,6 @@ export const extractLinkFromEvent = (event: APIGatewayProxyEventV2): Link =>
 
 export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchOperation[] =>
   parseEventBody(event) as PatchOperation[]
+
+export const extractJwtFromEvent = (event: APIGatewayProxyEventV2): StringObject =>
+  jwt.decode((event.headers.authorization || event.headers.Authorization).replace(/^Bearer /i, ''))

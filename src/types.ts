@@ -16,3 +16,11 @@ export interface LinkBatch {
 export interface StringObject {
   [key: string]: string
 }
+
+export type MessageType = 'PROMOTIONAL' | 'TRANSACTIONAL'
+
+export interface SMSMessage {
+  to: string
+  contents: string
+  messageType?: MessageType
+}
