@@ -26,6 +26,7 @@ export const mutateObjectOnJsonPatch = false
 
 export const idMinLength = parseInt(process.env.ID_MIN_LENGTH as string, 10)
 export const idMaxLength = parseInt(process.env.ID_MAX_LENGTH as string, 10)
+export const linkExpireDays = parseInt(process.env.LINKS_EXPIRE_DAYS as string, 10)
 
 // SMS Queue API
 

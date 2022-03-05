@@ -342,6 +342,7 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref LinksTable
           ID_MIN_LENGTH: 3
           ID_MAX_LENGTH: 4
+          LINKS_EXPIRE_DAYS: 30
       Events:
         ApiKey:
           Type: Api
