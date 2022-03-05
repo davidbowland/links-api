@@ -1,7 +1,7 @@
 import { deleteDataById, scanExpiredIds } from '../services/dynamodb'
-import status from '../utils/status'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { log, logError } from '../utils/logging'
+import status from '../utils/status'
 
 export const postStartPruneHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })

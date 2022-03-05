@@ -24,6 +24,8 @@ Mappings:
       domainInternal: links-api-internal.dbowland.com
       logStreamFunction: log-subscriber
       schedulerFunction: scheduler-service
+      smsApiKeyName: sms-qu-ApiAp-0vvm2O9lZAEs
+      smsApiUrl: https://sms-queue-api.dbowland.com/v1
       table: links-api
       userPool: us-east-2_h0oBECGFC
       userPoolClient: nd9p4gg5esgqvvop9u78umolb
@@ -36,6 +38,8 @@ Mappings:
       domainInternal: links-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
       schedulerFunction: scheduler-service-test
+      smsApiKeyName: sms-qu-ApiAp-3Ox0KVJulSZ0
+      smsApiUrl: https://sms-queue-api.bowland.link/v1
       table: links-api-test
       userPool: us-east-2_7k2VH6sSy
       userPoolClient: 56g7s1qsa7ppib7elgvavi8s2t
@@ -246,6 +250,8 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /links/{linkId}
             Method: get
+            Auth:
+              Authorizer: NONE
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
@@ -331,7 +337,7 @@ Resources:
       Environment:
         Variables:
           API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
+            - 'https://${Domain}/v1/links'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref LinksTable
           ID_MIN_LENGTH: 3
@@ -351,6 +357,8 @@ Resources:
             ApiId: !Ref HttpApi
             Path: /links
             Method: post
+            Auth:
+              Authorizer: NONE
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
@@ -417,6 +425,60 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostPruneLogGroup
+
+  PostSendTextFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-send-text.postSendTextHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 10
+      Description: links-api post send text
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: 2012-10-17
+          Statement:
+            - Action:
+                - 'apigateway:GET'
+              Effect: Allow
+              Resource: 'arn:aws:apigateway:us-east-1::/apikeys'
+      Environment:
+        Variables:
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+          SMS_API_KEY_NAME: !FindInMap [EnvironmentMap, !Ref Environment, smsApiKeyName]
+          SMS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, smsApiUrl]
+          USER_POOL_ID: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
+      Events:
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /links/{linkId}/send-text
+            Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
+      Tags:
+        'created-by': 'links-api'
+        'created-for': 'links'
+
+  PostSendTextLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostSendTextFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostSendTextFunction}
+      RetentionInDays: 30
+
+  PostSendTextGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostSendTextLogGroup
 
   # DynamoDB
 

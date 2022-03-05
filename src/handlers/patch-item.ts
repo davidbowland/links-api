@@ -2,10 +2,10 @@ import { applyPatch } from 'fast-json-patch'
 
 import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import { getDataById, setDataById } from '../services/dynamodb'
-import status from '../utils/status'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation } from '../types'
 import { extractJsonPatchFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
+import status from '../utils/status'
 
 const patchById = async (linkId: string, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResultV2<any>> => {
   const link = await getDataById(linkId)
