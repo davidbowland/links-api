@@ -1,4 +1,4 @@
-import { apiUrl, idMinLength, idMaxLength } from '../config'
+import { corsDomain, idMinLength, idMaxLength } from '../config'
 import { getDataById, setDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { extractLinkFromEvent } from '../utils/events'
@@ -44,10 +44,11 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
     try {
       const linkId = await getNextId()
       await setDataById(linkId, link)
+      const location = `${corsDomain}/r/${linkId}`
       return {
         ...status.CREATED,
-        body: JSON.stringify({ ...link, linkId }),
-        headers: { Location: `${apiUrl}/${linkId}` },
+        body: JSON.stringify({ ...link, linkId, location }),
+        headers: { Location: location },
       }
     } catch (error) {
       logError(error)

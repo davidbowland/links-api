@@ -336,9 +336,7 @@ Resources:
             TableName: !Ref LinksTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/links'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref LinksTable
           ID_MIN_LENGTH: 3
           ID_MAX_LENGTH: 4

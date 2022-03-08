@@ -59,14 +59,14 @@ describe('post-item', () => {
     test('expect CREATED and body', async () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
-      expect(JSON.parse(result.body)).toEqual(expect.objectContaining({ url: link.url, linkId: 'j2j2' }))
+      expect(JSON.parse(result.body)).toEqual(
+        expect.objectContaining({ url: link.url, linkId: 'j2j2', location: 'http://links.bowland.link/r/j2j2' })
+      )
     })
 
     test('expect Location header', async () => {
       const result = await postItemHandler(event)
-      expect(result).toEqual(
-        expect.objectContaining({ headers: { Location: 'https://links-api.bowland.link/v1/links/j2j2' } })
-      )
+      expect(result).toEqual(expect.objectContaining({ headers: { Location: 'http://links.bowland.link/r/j2j2' } }))
     })
   })
 })

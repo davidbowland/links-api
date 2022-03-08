@@ -1,7 +1,3 @@
-// API
-
-process.env.API_URL = 'https://links-api.bowland.link/v1/links'
-
 // Cognito
 
 process.env.USER_POOL_ID = 'us-east-2_8765redfghuyt'

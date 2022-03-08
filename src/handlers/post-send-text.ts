@@ -13,7 +13,6 @@ export const postSendTextHandler = async (event: APIGatewayProxyEventV2): Promis
     if (jwtPayload === null) {
       return { ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid JWT' }) }
     }
-    console.log({ jwtPayload })
     await sendSms(jwtPayload.phone_number, `Your shortned URL is: ${corsDomain}/r/${linkId}`)
 
     return status.NO_CONTENT
