@@ -11,7 +11,7 @@ jest.mock('@services/queue')
 jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
-describe('post-item', () => {
+describe('post-send-text', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {

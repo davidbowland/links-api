@@ -31,5 +31,5 @@ export const linkExpireDays = parseInt(process.env.LINKS_EXPIRE_DAYS as string, 
 // SMS Queue API
 
 export const corsDomain = process.env.CORS_DOMAIN as string
-export const smsApiKeyName = process.env.SMS_API_KEY_NAME as string
+export const smsApiKey = process.env.SMS_API_KEY as string
 export const smsApiUrl = process.env.SMS_API_URL as string

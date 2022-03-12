@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 
-import { smsApiKeyName, smsApiUrl } from '../config'
-import { getApiKey } from '../services/api-keys'
+import { smsApiKey, smsApiUrl } from '../config'
 import { SMSMessage } from '../types'
 
 const api = axios.create({
@@ -17,13 +16,11 @@ const convertContentsToJson = (to: string, contents: string): SMSMessage => ({
 })
 
 export const sendSms = (to: string, contents: string): Promise<AxiosResponse> =>
-  Promise.resolve(convertContentsToJson(to, contents)).then(exports.sendRawSms)
+  exports.sendRawSms(convertContentsToJson(to, contents))
 
-export const sendRawSms = async (body: SMSMessage): Promise<AxiosResponse> => {
-  const apiKey = await getApiKey(smsApiKeyName)
-  return api.post('/messages', body, {
+export const sendRawSms = (body: SMSMessage): Promise<AxiosResponse> =>
+  api.post('/messages', body, {
     headers: {
-      'x-api-key': apiKey,
+      'x-api-key': smsApiKey,
     },
   })
-}
