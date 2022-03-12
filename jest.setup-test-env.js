@@ -15,5 +15,5 @@ process.env.LINKS_EXPIRE_DAYS = '30'
 // SMS Queue API
 
 process.env.CORS_DOMAIN = 'http://links.bowland.link'
-process.env.SMS_API_KEY_NAME = '3edfgr4ertyjkijhg8'
+process.env.SMS_API_KEY = '3edfgr4ertyjkijhg8'
 process.env.SMS_API_URL = 'https://sms-api.dbowland.com/v1'

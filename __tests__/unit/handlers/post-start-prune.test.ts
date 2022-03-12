@@ -9,7 +9,7 @@ import status from '@utils/status'
 jest.mock('@services/dynamodb')
 jest.mock('@utils/logging')
 
-describe('post-item', () => {
+describe('post-start-prune', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {

@@ -13,6 +13,9 @@ Parameters:
       - prod
       - test
     Description: Environment for deploy
+  SmsApiKey:
+    Type: String
+    Description: API key for sms-queue-api
 
 Mappings:
   EnvironmentMap:
@@ -24,7 +27,6 @@ Mappings:
       domainInternal: links-api-internal.dbowland.com
       logStreamFunction: log-subscriber
       schedulerFunction: scheduler-service
-      smsApiKeyName: sms-qu-ApiAp-0vvm2O9lZAEs
       smsApiUrl: https://sms-queue-api.dbowland.com/v1
       table: links-api
       userPool: us-east-2_h0oBECGFC
@@ -38,7 +40,6 @@ Mappings:
       domainInternal: links-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
       schedulerFunction: scheduler-service-test
-      smsApiKeyName: sms-qu-ApiAp-3Ox0KVJulSZ0
       smsApiUrl: https://sms-queue-api.bowland.link/v1
       table: links-api-test
       userPool: us-east-2_7k2VH6sSy
@@ -447,7 +448,7 @@ Resources:
       Environment:
         Variables:
           CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
-          SMS_API_KEY_NAME: !FindInMap [EnvironmentMap, !Ref Environment, smsApiKeyName]
+          SMS_API_KEY: !Ref SmsApiKey
           SMS_API_URL: !FindInMap [EnvironmentMap, !Ref Environment, smsApiUrl]
           USER_POOL_ID: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
       Events:
