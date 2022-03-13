@@ -439,12 +439,6 @@ Resources:
       Description: links-api post send text
       Policies:
         - AWSLambdaBasicExecutionRole
-        - Version: 2012-10-17
-          Statement:
-            - Action:
-                - 'apigateway:GET'
-              Effect: Allow
-              Resource: 'arn:aws:apigateway:us-east-1::/apikeys'
       Environment:
         Variables:
           CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
