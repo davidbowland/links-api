@@ -1,14 +1,16 @@
-import { link } from '../__mocks__'
+import { link, linkId } from '../__mocks__'
 import eventJson from '@events/post-item.json'
 import { postItemHandler } from '@handlers/post-item'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
 import { APIGatewayProxyEventV2 } from '@types'
 import * as events from '@utils/events'
+import * as idGenerator from '@utils/id-generator'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
 jest.mock('@utils/events')
+jest.mock('@utils/id-generator')
 jest.mock('@utils/logging')
 
 describe('post-item', () => {
@@ -20,6 +22,7 @@ describe('post-item', () => {
     mocked(dynamodb).getDataById.mockRejectedValue(undefined)
     mocked(dynamodb).setDataById.mockResolvedValue(undefined)
     mocked(events).extractLinkFromEvent.mockReturnValue(link)
+    mocked(idGenerator).getNextId.mockResolvedValue(linkId)
 
     Math.random = mockRandom.mockReturnValue(0.5)
   })
@@ -39,15 +42,7 @@ describe('post-item', () => {
 
     test('expect linkId passed to setDataById', async () => {
       await postItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('j2j2', expect.objectContaining({ url: link.url }))
-    })
-
-    test('expect second linkId when first exists', async () => {
-      mocked(dynamodb).getDataById.mockResolvedValueOnce(link)
-      mockRandom.mockReturnValueOnce(0.5)
-      mockRandom.mockReturnValueOnce(0.25)
-      await postItemHandler(event)
-      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('b2s2', expect.objectContaining({ url: link.url }))
+      expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith('abc123', expect.objectContaining({ url: link.url }))
     })
 
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
@@ -60,13 +55,13 @@ describe('post-item', () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(JSON.parse(result.body)).toEqual(
-        expect.objectContaining({ url: link.url, linkId: 'j2j2', location: 'http://links.bowland.link/r/j2j2' })
+        expect.objectContaining({ url: link.url, linkId: 'abc123', location: 'http://links.bowland.link/r/abc123' })
       )
     })
 
     test('expect Location header', async () => {
       const result = await postItemHandler(event)
-      expect(result).toEqual(expect.objectContaining({ headers: { Location: 'http://links.bowland.link/r/j2j2' } }))
+      expect(result).toEqual(expect.objectContaining({ headers: { Location: 'http://links.bowland.link/r/abc123' } }))
     })
   })
 })
