@@ -15,20 +15,12 @@ jest.mock('@utils/logging')
 
 describe('post-item', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
-  const mathRandom = Math.random
-  const mockRandom = jest.fn()
 
   beforeAll(() => {
     mocked(dynamodb).getDataById.mockRejectedValue(undefined)
     mocked(dynamodb).setDataById.mockResolvedValue(undefined)
     mocked(events).extractLinkFromEvent.mockReturnValue(link)
     mocked(idGenerator).getNextId.mockResolvedValue(linkId)
-
-    Math.random = mockRandom.mockReturnValue(0.5)
-  })
-
-  afterAll(() => {
-    Math.random = mathRandom
   })
 
   describe('postItemHandler', () => {

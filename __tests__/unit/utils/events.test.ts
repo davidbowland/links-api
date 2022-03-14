@@ -17,6 +17,11 @@ describe('events', () => {
       expect(() => formatLink(nonHttpLink)).toThrow()
     })
 
+    test('expect error when expiration too late link', () => {
+      const tooLateExpirationLink = { ...link, expiration: new Date().getTime() + 100_000_000_000 }
+      expect(() => formatLink(tooLateExpirationLink)).toThrow()
+    })
+
     test('expect formatted link returned', () => {
       const validLink = { url: 'https://dbowland.com/' }
       const result = formatLink(validLink)

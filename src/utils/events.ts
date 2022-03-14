@@ -22,9 +22,13 @@ export const formatLink = (link: UnformattedLink): Link => {
   if (new URL(link.url).protocol.match(/^https?:$/i) === null) {
     throw new Error('url must be http or https')
   }
+  const lastExpiration = new Date().getTime() + EXPIRATION_DURATION
+  if (link.expiration !== undefined && link.expiration > lastExpiration) {
+    throw new Error('expiration is outside acceptable range')
+  }
   return {
     accessCount: link.accessCount ?? 0,
-    expiration: link.expiration ?? new Date().getTime() + EXPIRATION_DURATION,
+    expiration: link.expiration ?? lastExpiration,
     lastAccessed: link.lastAccessed ?? 0,
     url: link.url,
   }

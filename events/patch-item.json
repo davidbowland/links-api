@@ -6,7 +6,7 @@
   "requestContext": {
     "http": {
       "method": "PATCH",
-      "path": "/v1/links"
+      "path": "/v1/links/abc123"
     }
   }
 }
