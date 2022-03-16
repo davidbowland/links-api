@@ -28,10 +28,10 @@ describe('post-send-text', () => {
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
-    test('expect BAD_REQUEST when JWT is invalid', async () => {
+    test('expect FORBIDDEN when JWT is invalid', async () => {
       mocked(events).extractJwtFromEvent.mockReturnValueOnce(null)
       const result = await postSendTextHandler(event)
-      expect(result).toEqual({ statusCode: 400, body: JSON.stringify({ message: 'Invalid JWT' }) })
+      expect(result).toEqual({ statusCode: 403, body: JSON.stringify({ message: 'Invalid JWT' }) })
     })
 
     test('expect sendSMS is called and NO_CONTENT status returned', async () => {

@@ -11,7 +11,7 @@ export const postSendTextHandler = async (event: APIGatewayProxyEventV2): Promis
     const linkId = event.pathParameters.linkId
     const jwtPayload = extractJwtFromEvent(event)
     if (jwtPayload === null) {
-      return { ...status.BAD_REQUEST, body: JSON.stringify({ message: 'Invalid JWT' }) }
+      return { ...status.FORBIDDEN, body: JSON.stringify({ message: 'Invalid JWT' }) }
     }
     await sendSms(jwtPayload.phone_number, `Your shortned URL is: ${corsDomain}/r/${linkId}`)
 
