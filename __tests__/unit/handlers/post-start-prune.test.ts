@@ -1,9 +1,10 @@
-import { linkId } from '../__mocks__'
-import eventJson from '@events/post-start-prune.json'
-import { postStartPruneHandler } from '@handlers/post-start-prune'
 import { mocked } from 'jest-mock'
+
 import * as dynamodb from '@services/dynamodb'
 import { APIGatewayProxyEventV2 } from '@types'
+import eventJson from '@events/post-start-prune.json'
+import { linkId } from '../__mocks__'
+import { postStartPruneHandler } from '@handlers/post-start-prune'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')

@@ -1,7 +1,8 @@
-import { link } from '../__mocks__'
 import { mocked } from 'jest-mock'
+
 import * as dynamodb from '@services/dynamodb'
 import { getNextId } from '@utils/id-generator'
+import { link } from '../__mocks__'
 
 jest.mock('@services/dynamodb')
 

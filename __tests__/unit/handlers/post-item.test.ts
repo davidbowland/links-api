@@ -1,11 +1,12 @@
-import { link, linkId } from '../__mocks__'
-import eventJson from '@events/post-item.json'
-import { postItemHandler } from '@handlers/post-item'
 import { mocked } from 'jest-mock'
+
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayProxyEventV2 } from '@types'
 import * as events from '@utils/events'
 import * as idGenerator from '@utils/id-generator'
+import { link, linkId } from '../__mocks__'
+import { APIGatewayProxyEventV2 } from '@types'
+import eventJson from '@events/post-item.json'
+import { postItemHandler } from '@handlers/post-item'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -47,7 +48,7 @@ describe('post-item', () => {
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(JSON.parse(result.body)).toEqual(
-        expect.objectContaining({ url: link.url, linkId: 'abc123', location: 'http://links.bowland.link/r/abc123' })
+        expect.objectContaining({ linkId: 'abc123', location: 'http://links.bowland.link/r/abc123', url: link.url })
       )
     })
 

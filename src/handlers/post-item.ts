@@ -1,9 +1,9 @@
-import { corsDomain } from '../config'
-import { setDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
+import { log, logError } from '../utils/logging'
+import { corsDomain } from '../config'
 import { extractLinkFromEvent } from '../utils/events'
 import { getNextId } from '../utils/id-generator'
-import { log, logError } from '../utils/logging'
+import { setDataById } from '../services/dynamodb'
 import status from '../utils/status'
 
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {

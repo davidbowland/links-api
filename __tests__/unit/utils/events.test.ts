@@ -1,9 +1,9 @@
-import { link, jsonPatchOperations } from '../__mocks__'
+import { extractJsonPatchFromEvent, extractJwtFromEvent, extractLinkFromEvent, formatLink } from '@utils/events'
+import { jsonPatchOperations, link } from '../__mocks__'
+import { APIGatewayProxyEventV2 } from '@types'
 import patchEventJson from '@events/patch-item.json'
 import postEventJson from '@events/post-item.json'
 import postSendTextEventJson from '@events/post-send-text.json'
-import { APIGatewayProxyEventV2 } from '@types'
-import { extractLinkFromEvent, extractJsonPatchFromEvent, extractJwtFromEvent, formatLink } from '@utils/events'
 
 describe('events', () => {
   describe('formatLink', () => {

@@ -1,5 +1,5 @@
-import { link, linkId } from '../__mocks__'
 import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
+import { link, linkId } from '../__mocks__'
 
 const mockDeleteItem = jest.fn()
 const mockGetItem = jest.fn()
@@ -55,7 +55,7 @@ describe('dynamodb', () => {
   describe('scanData', () => {
     beforeAll(() => {
       mockScanTable.mockResolvedValue({
-        Items: [{ LinkId: { S: `${linkId}` }, Data: { S: JSON.stringify(link) } }],
+        Items: [{ Data: { S: JSON.stringify(link) }, LinkId: { S: `${linkId}` } }],
       })
     })
 
@@ -95,14 +95,15 @@ describe('dynamodb', () => {
       await setDataById(linkId, link)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
-          LinkId: {
-            S: `${linkId}`,
+          Data: {
+            S: JSON.stringify(link),
           },
           Expiration: {
             N: `${link.expiration}`,
           },
-          Data: {
-            S: JSON.stringify(link),
+
+          LinkId: {
+            S: `${linkId}`,
           },
         },
         TableName: 'links-table',

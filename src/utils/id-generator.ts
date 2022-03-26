@@ -1,4 +1,4 @@
-import { idMinLength, idMaxLength } from '../config'
+import { idMaxLength, idMinLength } from '../config'
 import { getDataById } from '../services/dynamodb'
 
 // Don't allow vowells, digits that look like vowells, or ambiguous characters

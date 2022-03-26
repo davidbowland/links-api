@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
-import { linkExpireDays } from '../config'
 import { APIGatewayProxyEventV2, Link, PatchOperation, StringObject } from '../types'
+import { linkExpireDays } from '../config'
 
 // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 86,400,000
 const EXPIRATION_DURATION = linkExpireDays * 86_400_000

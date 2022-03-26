@@ -1,5 +1,5 @@
-import { deleteDataById, getDataById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
+import { deleteDataById, getDataById } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 

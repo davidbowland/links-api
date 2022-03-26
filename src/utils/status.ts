@@ -1,4 +1,4 @@
-// Status codes
+/* eslint-disable sort-keys */
 
 export default {
   OK: { statusCode: 200 },

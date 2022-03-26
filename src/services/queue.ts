@@ -10,9 +10,9 @@ const api = axios.create({
 /* Emails */
 
 const convertContentsToJson = (to: string, contents: string): SMSMessage => ({
-  to,
   contents,
   messageType: 'TRANSACTIONAL',
+  to,
 })
 
 export const sendSms = (to: string, contents: string): Promise<AxiosResponse> =>

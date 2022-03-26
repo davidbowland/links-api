@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { dynamodbTableName } from '../config'
 import { Link, LinkBatch } from '../types'
+import { dynamodbTableName } from '../config'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
@@ -38,7 +38,7 @@ export const getDataById = (linkId: string): Promise<Link> =>
 /* Scan for all items */
 
 const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): LinkBatch[] =>
-  response.Items.map((item) => ({ id: item.LinkId.S, data: JSON.parse(item.Data.S) }))
+  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.LinkId.S }))
 
 export const scanData = (): Promise<LinkBatch[]> =>
   dynamodb
@@ -75,14 +75,14 @@ export const setDataById = (linkId: string, data: Link): Promise<DynamoDB.Types.
   dynamodb
     .putItem({
       Item: {
-        LinkId: {
-          S: `${linkId}`,
+        Data: {
+          S: JSON.stringify(data),
         },
         Expiration: {
           N: `${data.expiration ?? 0}`,
         },
-        Data: {
-          S: JSON.stringify(data),
+        LinkId: {
+          S: `${linkId}`,
         },
       },
       TableName: dynamodbTableName,

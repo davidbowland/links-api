@@ -1,10 +1,11 @@
+import { mocked } from 'jest-mock'
+
+import * as events from '@utils/events'
+import * as queue from '@services/queue'
+import { APIGatewayProxyEventV2 } from '@types'
 import { decodedJwt } from '../__mocks__'
 import eventJson from '@events/post-send-text.json'
 import { postSendTextHandler } from '@handlers/post-send-text'
-import { mocked } from 'jest-mock'
-import * as queue from '@services/queue'
-import { APIGatewayProxyEventV2 } from '@types'
-import * as events from '@utils/events'
 import status from '@utils/status'
 
 jest.mock('@services/queue')
@@ -31,7 +32,7 @@ describe('post-send-text', () => {
     test('expect FORBIDDEN when JWT is invalid', async () => {
       mocked(events).extractJwtFromEvent.mockReturnValueOnce(null)
       const result = await postSendTextHandler(event)
-      expect(result).toEqual({ statusCode: 403, body: JSON.stringify({ message: 'Invalid JWT' }) })
+      expect(result).toEqual({ body: JSON.stringify({ message: 'Invalid JWT' }), statusCode: 403 })
     })
 
     test('expect sendSMS is called and NO_CONTENT status returned', async () => {
