@@ -23,4 +23,4 @@ export ID_MAX_LENGTH=4
 export SMS_API_KEY=$(aws apigateway get-api-key --api-key l3q9ffyih6 --include-value --region us-east-1 | jq -r .value)
 export SMS_API_URL='https://sms-queue-api.bowland.link/v1'
 export USER_POOL_ID=us-east-2_7k2VH6sSy
-sam local start-api --region=us-east-2 --force-image-build  --parameter-overrides "Environment=test SmsApiKey=$SMS_API_KEY"
+sam local start-api --region=us-east-2 --force-image-build  --parameter-overrides "Environment=test SmsApiKey=$SMS_API_KEY" --log-file local.log
