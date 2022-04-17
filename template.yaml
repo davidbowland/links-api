@@ -154,6 +154,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   DeleteItemLogGroup:
     Type: AWS::Logs::LogGroup
@@ -161,6 +162,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   DeleteItemLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -201,6 +209,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   GetAllItemsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -208,6 +217,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetAllItemsLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -256,6 +272,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   GetByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -263,6 +280,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetByIdLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -303,6 +327,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   PatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -310,6 +335,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PatchGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -362,6 +394,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   PostLogGroup:
     Type: AWS::Logs::LogGroup
@@ -369,6 +402,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -409,6 +449,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   PostPruneLogGroup:
     Type: AWS::Logs::LogGroup
@@ -416,6 +457,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostPruneItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostPruneGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -457,6 +505,7 @@ Resources:
       Tags:
         'created-by': 'links-api'
         'created-for': 'links'
+        'environment': !Ref Environment
 
   PostSendTextLogGroup:
     Type: AWS::Logs::LogGroup
@@ -464,6 +513,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostSendTextFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'links-api'
+        - Key: 'created-for'
+          Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostSendTextGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -503,6 +559,8 @@ Resources:
           Value: 'links-api'
         - Key: 'created-for'
           Value: 'links'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   # EventBridge
 
