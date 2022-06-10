@@ -101,7 +101,25 @@ describe('dynamodb', () => {
           Expiration: {
             N: `${link.expiration}`,
           },
+          LinkId: {
+            S: `${linkId}`,
+          },
+        },
+        TableName: 'links-table',
+      })
+    })
 
+    test('expect expiration defaults to 0', async () => {
+      const noExpirationLink = { ...link, expiration: undefined }
+      await setDataById(linkId, noExpirationLink)
+      expect(mockPutItem).toHaveBeenCalledWith({
+        Item: {
+          Data: {
+            S: JSON.stringify(noExpirationLink),
+          },
+          Expiration: {
+            N: '0',
+          },
           LinkId: {
             S: `${linkId}`,
           },
