@@ -133,7 +133,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
       Description: links-api delete by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -155,6 +154,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
 
   DeleteItemLogGroup:
     Type: AWS::Logs::LogGroup
@@ -188,7 +189,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
       Description: links-api get all items
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -210,6 +210,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 30
+      Tracing: Active
 
   GetAllItemsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -243,7 +245,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
       Description: links-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -273,6 +274,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
 
   GetByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -306,7 +309,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
       Description: links-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -328,6 +330,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
 
   PatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -361,7 +365,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
       Description: links-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -395,6 +398,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
 
   PostLogGroup:
     Type: AWS::Logs::LogGroup
@@ -428,7 +433,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 60
       Description: links-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -450,6 +454,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 60
+      Tracing: Active
 
   PostPruneLogGroup:
     Type: AWS::Logs::LogGroup
@@ -483,7 +489,6 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 10
       Description: links-api post send text
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -506,6 +511,8 @@ Resources:
         'created-by': 'links-api'
         'created-for': 'links'
         'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
 
   PostSendTextLogGroup:
     Type: AWS::Logs::LogGroup
