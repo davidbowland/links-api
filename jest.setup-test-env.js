@@ -10,7 +10,7 @@ process.env.DYNAMODB_TABLE_NAME = 'links-table'
 
 process.env.ID_MIN_LENGTH = '3'
 process.env.ID_MAX_LENGTH = '4'
-process.env.LINKS_EXPIRE_DAYS = '30'
+process.env.LINKS_EXPIRE_DAYS = '365'
 
 // SMS Queue API
 
