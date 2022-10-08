@@ -33,13 +33,16 @@ export const getDataById = (linkId: string): Promise<Link> =>
       TableName: dynamodbTableName,
     })
     .promise()
-    .then((response) => response.Item.Data.S)
+    .then((response: any) => response.Item.Data.S)
     .then(JSON.parse)
 
 /* Scan for all items */
 
 const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): LinkBatch[] =>
-  response.Items.map((item) => ({ data: JSON.parse(item.Data.S), id: item.LinkId.S }))
+  response.Items?.map((item) => ({
+    data: JSON.parse(item.Data.S as string),
+    id: item.LinkId.S as string,
+  })) as LinkBatch[]
 
 export const scanData = (): Promise<LinkBatch[]> =>
   dynamodb
@@ -48,7 +51,7 @@ export const scanData = (): Promise<LinkBatch[]> =>
       TableName: dynamodbTableName,
     })
     .promise()
-    .then((response) => getItemsFromScan(response))
+    .then((response: any) => getItemsFromScan(response))
 
 /* Scan for expired items */
 
@@ -68,7 +71,7 @@ export const scanExpiredIds = (): Promise<any> =>
       TableName: dynamodbTableName,
     })
     .promise()
-    .then((response) => response.Items.map((item) => item.LinkId.S))
+    .then((response: any) => response.Items.map((item: any) => item.LinkId.S))
 
 /* Set item */
 

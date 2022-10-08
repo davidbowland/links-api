@@ -48,4 +48,6 @@ export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchO
   parseEventBody(event) as PatchOperation[]
 
 export const extractJwtFromEvent = (event: APIGatewayProxyEventV2): StringObject =>
-  jwt.decode((event.headers.authorization || event.headers.Authorization).replace(/^Bearer /i, ''))
+  jwt.decode(
+    ((event.headers.authorization || event.headers.Authorization) as string).replace(/^Bearer /i, '')
+  ) as StringObject

@@ -27,7 +27,7 @@ const patchById = async (linkId: string, patchOperations: PatchOperation[]): Pro
     const link = await getDataById(linkId)
     try {
       return await applyJsonPatch(link, linkId, patchOperations)
-    } catch (error) {
+    } catch (error: any) {
       return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
     }
   } catch {
@@ -38,11 +38,11 @@ const patchById = async (linkId: string, patchOperations: PatchOperation[]): Pro
 export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const linkId = event.pathParameters.linkId
+    const linkId = event.pathParameters?.linkId as string
     const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(linkId, patchOperations)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }
