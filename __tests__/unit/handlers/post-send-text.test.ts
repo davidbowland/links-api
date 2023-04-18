@@ -26,17 +26,20 @@ describe('post-send-text', () => {
         throw new Error('JWT error')
       })
       const result = await postSendTextHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
     test('expect FORBIDDEN when JWT is invalid', async () => {
       mocked(events).extractJwtFromEvent.mockReturnValueOnce(null)
       const result = await postSendTextHandler(event)
+
       expect(result).toEqual({ body: JSON.stringify({ message: 'Invalid JWT' }), statusCode: 403 })
     })
 
     test('expect sendSMS is called and NO_CONTENT status returned', async () => {
       const result = await postSendTextHandler(event)
+
       expect(mocked(queue).sendSms).toHaveBeenCalledWith(
         '+15551234567',
         'Your shortned URL is: http://links.bowland.link/r/abc123'

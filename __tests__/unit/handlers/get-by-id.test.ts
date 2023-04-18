@@ -21,22 +21,26 @@ describe('get-by-id', () => {
     test('expect NOT_FOUND on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataById.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
     test('expect setDataById called with updated access count', async () => {
       await getByIdHandler(event)
+
       expect(mocked(dynamodb).setDataById).toHaveBeenCalledWith(linkId, expect.objectContaining({ accessCount: 8 }))
     })
 
     test("expect setDataById error doesn't reject", async () => {
       mocked(dynamodb).setDataById.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.OK))
     })
 
     test('expect OK when index exists', async () => {
       const result = await getByIdHandler(event)
+
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...link, linkId }) })
     })
   })

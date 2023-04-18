@@ -25,6 +25,7 @@ describe('queue', () => {
 
     test('expect sms contents to be passed to the endpoint', async () => {
       await sendSms(to, contents)
+
       expect(postEndpoint).toHaveBeenCalledWith({
         contents,
         messageType: 'TRANSACTIONAL',

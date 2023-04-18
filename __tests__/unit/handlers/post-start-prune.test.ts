@@ -22,22 +22,26 @@ describe('post-start-prune', () => {
     test('expect INTERNAL_SERVER_ERROR when scanExpiredIds rejects', async () => {
       mocked(dynamodb).scanExpiredIds.mockRejectedValueOnce(undefined)
       const result = await postStartPruneHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
     test('expect INTERNAL_SERVER_ERROR when deleteDataById rejects', async () => {
       mocked(dynamodb).deleteDataById.mockRejectedValueOnce(undefined)
       const result = await postStartPruneHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
     test('expect linkId passed to deleteDataById', async () => {
       await postStartPruneHandler(event)
+
       expect(mocked(dynamodb).deleteDataById).toHaveBeenCalledWith(linkId)
     })
 
     test('expect NO_CONTENT', async () => {
       const result = await postStartPruneHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NO_CONTENT))
     })
   })

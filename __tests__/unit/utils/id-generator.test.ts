@@ -25,6 +25,7 @@ describe('id-generator', () => {
 
     test('expect id returned passed to setDataById', async () => {
       const result = await getNextId()
+
       expect(result).toEqual('j2j2')
     })
 
@@ -33,6 +34,7 @@ describe('id-generator', () => {
       mockRandom.mockReturnValueOnce(0.5)
       mockRandom.mockReturnValueOnce(0.25)
       const result = await getNextId()
+
       expect(result).toEqual('b2s2')
     })
   })
