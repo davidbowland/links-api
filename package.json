@@ -4,7 +4,7 @@
   "description": "Lambda links API",
   "author": "David Bowland",
   "engines": {
-    "node": "^16.0.0"
+    "node": "^18.0.0"
   },
   "license": "ISC",
   "repository": {
