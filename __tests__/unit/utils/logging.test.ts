@@ -1,5 +1,6 @@
 import * as AWSXRay from 'aws-xray-sdk-core'
 import { log, logError, xrayCapture, xrayCaptureHttps } from '@utils/logging'
+import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import https from 'https'
 import { mocked } from 'jest-mock'
 
@@ -45,17 +46,17 @@ describe('logging', () => {
   })
 
   describe('xrayCapture', () => {
-    const capturedDynamodb = 'captured_dynamodb'
+    const capturedDynamodb = 'captured-dynamodb' as unknown as DynamoDB
     const dynamodb = 'dynamodb'
 
     beforeAll(() => {
-      mocked(AWSXRay).captureAWSClient.mockReturnValue(capturedDynamodb)
+      mocked(AWSXRay).captureAWSv3Client.mockReturnValue(capturedDynamodb)
     })
 
     test('expect AWSXRay.captureAWSClient when x-ray is enabled (not running locally)', () => {
       process.env.AWS_SAM_LOCAL = 'false'
       const result = xrayCapture(dynamodb)
-      expect(mocked(AWSXRay).captureAWSClient).toHaveBeenCalledWith(dynamodb)
+      expect(mocked(AWSXRay).captureAWSv3Client).toHaveBeenCalledWith(dynamodb)
       expect(result).toEqual(capturedDynamodb)
     })
 

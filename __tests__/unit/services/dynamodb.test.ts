@@ -1,17 +1,17 @@
 import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
 import { link, linkId } from '../__mocks__'
 
-const mockDeleteItem = jest.fn()
-const mockGetItem = jest.fn()
-const mockPutItem = jest.fn()
-const mockScanTable = jest.fn()
-jest.mock('aws-sdk', () => ({
+const mockSend = jest.fn()
+jest.mock('@aws-sdk/client-dynamodb', () => ({
+  BatchGetItemCommand: jest.fn().mockImplementation((x) => x),
+  DeleteItemCommand: jest.fn().mockImplementation((x) => x),
   DynamoDB: jest.fn(() => ({
-    deleteItem: (...args) => ({ promise: () => mockDeleteItem(...args) }),
-    getItem: (...args) => ({ promise: () => mockGetItem(...args) }),
-    putItem: (...args) => ({ promise: () => mockPutItem(...args) }),
-    scan: (...args) => ({ promise: () => mockScanTable(...args) }),
+    send: (...args) => mockSend(...args),
   })),
+  GetItemCommand: jest.fn().mockImplementation((x) => x),
+  PutItemCommand: jest.fn().mockImplementation((x) => x),
+  QueryCommand: jest.fn().mockImplementation((x) => x),
+  ScanCommand: jest.fn().mockImplementation((x) => x),
 }))
 jest.mock('@utils/logging', () => ({
   xrayCapture: jest.fn().mockImplementation((x) => x),
@@ -21,7 +21,8 @@ describe('dynamodb', () => {
   describe('deleteDataById', () => {
     test('expect index passed to delete', async () => {
       await deleteDataById(linkId)
-      expect(mockDeleteItem).toHaveBeenCalledWith({
+
+      expect(mockSend).toHaveBeenCalledWith({
         Key: {
           LinkId: {
             S: `${linkId}`,
@@ -34,12 +35,13 @@ describe('dynamodb', () => {
 
   describe('getDataById', () => {
     beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(link) } } })
+      mockSend.mockResolvedValue({ Item: { Data: { S: JSON.stringify(link) } } })
     })
 
     test('expect id passed to get', async () => {
       await getDataById(linkId)
-      expect(mockGetItem).toHaveBeenCalledWith({
+
+      expect(mockSend).toHaveBeenCalledWith({
         Key: {
           LinkId: {
             S: `${linkId}`,
@@ -51,44 +53,49 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await getDataById(linkId)
+
       expect(result).toEqual(link)
     })
   })
 
   describe('scanData', () => {
     beforeAll(() => {
-      mockScanTable.mockResolvedValue({
+      mockSend.mockResolvedValue({
         Items: [{ Data: { S: JSON.stringify(link) }, LinkId: { S: `${linkId}` } }],
       })
     })
 
     test('expect data parsed and returned', async () => {
       const result = await scanData()
+
       expect(result).toEqual([{ data: link, id: linkId }])
     })
 
     test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
+      mockSend.mockResolvedValueOnce({ Items: [] })
       const result = await scanData()
+
       expect(result).toEqual([])
     })
   })
 
   describe('scanExpiredIds', () => {
     beforeAll(() => {
-      mockScanTable.mockResolvedValue({
+      mockSend.mockResolvedValue({
         Items: [{ LinkId: { S: `${linkId}` } }],
       })
     })
 
     test('expect data parsed and returned', async () => {
       const result = await scanExpiredIds()
+
       expect(result).toEqual([linkId])
     })
 
     test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
+      mockSend.mockResolvedValueOnce({ Items: [] })
       const result = await scanExpiredIds()
+
       expect(result).toEqual([])
     })
   })
@@ -96,7 +103,8 @@ describe('dynamodb', () => {
   describe('setDataById', () => {
     test('expect index and data passed to put', async () => {
       await setDataById(linkId, link)
-      expect(mockPutItem).toHaveBeenCalledWith({
+
+      expect(mockSend).toHaveBeenCalledWith({
         Item: {
           Data: {
             S: JSON.stringify(link),
@@ -115,7 +123,8 @@ describe('dynamodb', () => {
     test('expect expiration defaults to 0', async () => {
       const noExpirationLink = { ...link, expiration: undefined }
       await setDataById(linkId, noExpirationLink)
-      expect(mockPutItem).toHaveBeenCalledWith({
+
+      expect(mockSend).toHaveBeenCalledWith({
         Item: {
           Data: {
             S: JSON.stringify(noExpirationLink),
