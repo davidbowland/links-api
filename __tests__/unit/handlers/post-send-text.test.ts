@@ -42,7 +42,7 @@ describe('post-send-text', () => {
 
       expect(mocked(queue).sendSms).toHaveBeenCalledWith(
         '+15551234567',
-        'Your shortned URL is: http://links.bowland.link/r/abc123'
+        'Your shortned URL is: http://links.bowland.link/r/abc123',
       )
       expect(result).toEqual(status.NO_CONTENT)
     })

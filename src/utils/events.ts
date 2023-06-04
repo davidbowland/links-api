@@ -38,7 +38,7 @@ export const formatLink = (link: UnformattedLink): Link => {
 
 const parseEventBody = (event: APIGatewayProxyEventV2): unknown =>
   JSON.parse(
-    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
+    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string),
   )
 
 export const extractLinkFromEvent = (event: APIGatewayProxyEventV2): Link =>
@@ -49,5 +49,5 @@ export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchO
 
 export const extractJwtFromEvent = (event: APIGatewayProxyEventV2): StringObject =>
   jwt.decode(
-    ((event.headers.authorization || event.headers.Authorization) as string).replace(/^Bearer /i, '')
+    ((event.headers.authorization || event.headers.Authorization) as string).replace(/^Bearer /i, ''),
   ) as StringObject

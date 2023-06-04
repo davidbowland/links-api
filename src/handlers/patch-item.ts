@@ -10,7 +10,7 @@ import status from '../utils/status'
 const applyJsonPatch = async (
   link: Link,
   linkId: string,
-  patchOperations: PatchOperation[]
+  patchOperations: PatchOperation[],
 ): Promise<APIGatewayProxyResultV2<any>> => {
   const updatedLink = applyPatch(link, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
   try {

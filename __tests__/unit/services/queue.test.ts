@@ -19,7 +19,7 @@ describe('queue', () => {
 
           const body = postEndpoint(req.body)
           return res(body ? ctx.json(body) : ctx.status(400))
-        })
+        }),
       )
     })
 

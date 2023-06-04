@@ -52,7 +52,7 @@ describe('post-item', () => {
 
       expect(result).toEqual(expect.objectContaining(status.CREATED))
       expect(JSON.parse(result.body)).toEqual(
-        expect.objectContaining({ linkId: 'abc123', location: 'http://links.bowland.link/r/abc123', url: link.url })
+        expect.objectContaining({ linkId: 'abc123', location: 'http://links.bowland.link/r/abc123', url: link.url }),
       )
     })
 
