@@ -1,36 +1,30 @@
-import { http, HttpResponse, server } from '@setup-server'
-import { smsApiKey, smsApiUrl } from '@config'
 import { sendSms } from '@services/queue'
+import { smsApiKey } from '@config'
 
+const mockPostEndpoint = jest.fn()
+jest.mock('axios', () => ({
+  create: jest.fn().mockReturnValue({
+    post: (...args) => mockPostEndpoint(...args),
+  }),
+}))
+jest.mock('axios-retry')
 jest.mock('@utils/logging')
 
 describe('queue', () => {
   describe('sendSms', () => {
-    const to = '+1800JENNYCRAIG'
+    const body = {
+      contents: 'Hello, Goodbye!',
+      messageType: 'TRANSACTIONAL',
+      to: '+1800JENNYCRAIG',
+    }
     const contents = 'Hello, Goodbye!'
-    const postEndpoint = jest.fn().mockReturnValue(200)
-
-    beforeAll(() => {
-      server.use(
-        http.post(`${smsApiUrl}/messages`, async ({ request }) => {
-          if (smsApiKey != request.headers.get('x-api-key')) {
-            return new HttpResponse(JSON.stringify({ message: 'Invalid API key' }), { status: 403 })
-          }
-
-          const body = postEndpoint(await request.json())
-          return body ? HttpResponse.json(body) : new HttpResponse(null, { status: 400 })
-        }),
-      )
-    })
+    const headers = { 'x-api-key': smsApiKey }
+    const to = '+1800JENNYCRAIG'
 
     test('expect sms contents to be passed to the endpoint', async () => {
       await sendSms(to, contents)
 
-      expect(postEndpoint).toHaveBeenCalledWith({
-        contents,
-        messageType: 'TRANSACTIONAL',
-        to,
-      })
+      expect(mockPostEndpoint).toHaveBeenCalledWith('/messages', body, { headers })
     })
   })
 })
