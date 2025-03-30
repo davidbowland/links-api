@@ -128,7 +128,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/delete-item.deleteByIdHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -191,7 +191,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-all-items.getAllItemsHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -254,7 +254,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-by-id.getByIdHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -325,7 +325,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/patch-item.patchItemHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -388,7 +388,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/post-item.postItemHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -463,7 +463,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/post-start-prune.postStartPruneHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -526,7 +526,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/post-send-text.postSendTextHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 128
