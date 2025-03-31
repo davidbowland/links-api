@@ -6,6 +6,8 @@ import { linkExpireDays } from '../config'
 // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 86,400,000
 const EXPIRATION_DURATION = linkExpireDays * 86_400_000
 
+const getTimeInSeconds = () => Math.floor(Date.now() / 1000)
+
 /* Links */
 
 interface UnformattedLink {
@@ -22,7 +24,7 @@ export const formatLink = (link: UnformattedLink): Link => {
   if (new URL(link.url).protocol.match(/^https?:$/i) === null) {
     throw new Error('url must be http or https')
   }
-  const lastExpiration = new Date().getTime() + EXPIRATION_DURATION
+  const lastExpiration = getTimeInSeconds() + EXPIRATION_DURATION
   if (link.expiration !== undefined && link.expiration > lastExpiration) {
     throw new Error('expiration is outside acceptable range')
   }

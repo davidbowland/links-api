@@ -1,4 +1,4 @@
-import { deleteDataById, getDataById, scanData, scanExpiredIds, setDataById } from '@services/dynamodb'
+import { deleteDataById, getDataById, scanData, setDataById } from '@services/dynamodb'
 import { link, linkId } from '../__mocks__'
 
 const mockSend = jest.fn()
@@ -79,27 +79,6 @@ describe('dynamodb', () => {
     })
   })
 
-  describe('scanExpiredIds', () => {
-    beforeAll(() => {
-      mockSend.mockResolvedValue({
-        Items: [{ LinkId: { S: `${linkId}` } }],
-      })
-    })
-
-    test('expect data parsed and returned', async () => {
-      const result = await scanExpiredIds()
-
-      expect(result).toEqual([linkId])
-    })
-
-    test('expect empty object with no data returned', async () => {
-      mockSend.mockResolvedValueOnce({ Items: [] })
-      const result = await scanExpiredIds()
-
-      expect(result).toEqual([])
-    })
-  })
-
   describe('setDataById', () => {
     test('expect index and data passed to put', async () => {
       await setDataById(linkId, link)
@@ -111,26 +90,6 @@ describe('dynamodb', () => {
           },
           Expiration: {
             N: `${link.expiration}`,
-          },
-          LinkId: {
-            S: `${linkId}`,
-          },
-        },
-        TableName: 'links-table',
-      })
-    })
-
-    test('expect expiration defaults to 0', async () => {
-      const noExpirationLink = { ...link, expiration: undefined }
-      await setDataById(linkId, noExpirationLink)
-
-      expect(mockSend).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify(noExpirationLink),
-          },
-          Expiration: {
-            N: '0',
           },
           LinkId: {
             S: `${linkId}`,

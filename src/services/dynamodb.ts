@@ -61,26 +61,6 @@ export const scanData = async (): Promise<LinkBatch[]> => {
   return getItemsFromScan(response)
 }
 
-/* Scan for expired items */
-
-export const scanExpiredIds = async (): Promise<any> => {
-  const command = new ScanCommand({
-    ExpressionAttributeValues: {
-      ':v1': {
-        N: '1',
-      },
-      ':v2': {
-        N: `${new Date().getTime()}`,
-      },
-    },
-    FilterExpression: 'Expiration BETWEEN :v1 AND :v2',
-    IndexName: 'ExpirationIndex',
-    TableName: dynamodbTableName,
-  })
-  const response = await dynamodb.send(command)
-  return response.Items.map((item: any) => item.LinkId.S)
-}
-
 /* Set item */
 
 export const setDataById = async (linkId: string, data: Link): Promise<PutItemOutput> => {
@@ -90,7 +70,7 @@ export const setDataById = async (linkId: string, data: Link): Promise<PutItemOu
         S: JSON.stringify(data),
       },
       Expiration: {
-        N: `${data.expiration ?? 0}`,
+        N: `${data.expiration}`,
       },
       LinkId: {
         S: `${linkId}`,

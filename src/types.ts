@@ -3,7 +3,7 @@ export { Operation as PatchOperation } from 'fast-json-patch'
 
 export interface Link {
   accessCount: number
-  expiration?: number
+  expiration: number
   lastAccessed?: number
   url: string
 }

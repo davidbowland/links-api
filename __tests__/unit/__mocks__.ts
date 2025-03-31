@@ -4,7 +4,7 @@ export const linkId = 'abc123'
 
 export const link: Link = {
   accessCount: 7,
-  expiration: 1646033707709,
+  expiration: 1646033707,
   lastAccessed: 1646033707710,
   url: 'https://dbowland.com/',
 }
